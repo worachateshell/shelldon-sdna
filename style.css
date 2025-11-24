@@ -1,0 +1,897 @@
+:root {
+    --primary-color: #D4AF37;
+    /* Gold */
+    --secondary-color: #1a1a1a;
+    /* Dark Grey/Black */
+    --text-color: #E0E0E0;
+    /* Silver/White */
+    --bg-color: #000000;
+    /* Pure Black */
+    --accent-pink: #333333;
+    /* Dark Grey for borders */
+    --white: #121212;
+    /* Dark card background */
+    --shadow: 0 4px 20px rgba(212, 175, 55, 0.15);
+    /* Gold glow */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Prompt', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: radial-gradient(#333 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 2rem;
+    text-align: center;
+}
+
+/* Header */
+.wedding-logo h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 4rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.wedding-logo p {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    letter-spacing: 3px;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+}
+
+/* Game Layout */
+.game-layout {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+}
+
+/* Wheel */
+.wheel-container {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+}
+
+#wheel-canvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.arrow {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3rem;
+    color: #D4AF37;
+    z-index: 10;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Side Panel */
+.side-panel {
+    flex: 1;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.qr-section {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+}
+
+#qr-code {
+    width: 200px;
+    height: 200px;
+    margin: 1rem 0;
+}
+
+.qr-link {
+    font-size: 0.9rem;
+    color: #888;
+    word-break: break-all;
+}
+
+/* Game Area */
+.display-box {
+    background: var(--white);
+    border: 2px solid var(--primary-color);
+    border-radius: 20px;
+    padding: 3rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+    min-height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.display-box::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 1px solid var(--accent-pink);
+    border-radius: 15px;
+    pointer-events: none;
+}
+
+.name-display {
+    font-size: 3.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+    transition: transform 0.1s;
+}
+
+.name-display.animate {
+    animation: pulse 0.1s infinite;
+}
+
+.name-display.winner {
+    color: var(--primary-color);
+    transform: scale(1.2);
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+}
+
+/* Controls */
+.controls {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--primary-color);
+}
+
+.winner-display {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    min-height: 150px;
+    /* Increased for image */
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.guest-count {
+    margin-top: 1rem;
+    color: #888;
+}
+
+.btn {
+    padding: 1rem 2.5rem;
+    font-family: 'Prompt', sans-serif;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 100%;
+}
+
+.primary-btn {
+    background-color: var(--primary-color);
+    color: #000;
+    /* Black text on gold button */
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.4);
+}
+
+.primary-btn:hover {
+    background-color: #F4C430;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(212, 175, 55, 0.5);
+}
+
+.primary-btn:disabled {
+    background-color: #444;
+    color: #888;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.secondary-btn {
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.secondary-btn:hover {
+    background-color: var(--primary-color);
+    color: #000;
+}
+
+/* Modal */
+.modal-content {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--primary-color);
+    color: var(--text-color);
+}
+
+.close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-color);
+}
+
+textarea {
+    width: 100%;
+    height: 200px;
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid #444;
+    border-radius: 8px;
+    font-family: 'Prompt', sans-serif;
+    resize: vertical;
+    background: #222;
+    color: #fff;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Registration Input */
+.reg-input {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.2rem;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    font-family: 'Prompt', sans-serif;
+    text-align: center;
+}
+
+.reg-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .game-layout {
+        flex-direction: column;
+    }
+
+    .wheel-container {
+        width: 350px;
+        height: 350px;
+    }
+
+    .wedding-logo h1 {
+        font-size: 3rem;
+    }
+}
+
+/* Envelope Page Styles */
+.envelope-page .logo {
+    width: 100px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.envelope-page .subtitle {
+    color: #888;
+    margin-bottom: 2rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    /* For absolute positioning of children */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wedding-logo img {
+    max-width: 100%;
+    height: auto;
+}
+
+.top-right-qr {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.top-right-qr:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.top-right-qr img {
+    width: 80px;
+    height: 80px;
+    border-radius: 5px;
+    border: 2px solid #D4AF37;
+}
+
+.qr-label {
+    color: #D4AF37;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Responsive: Move to bottom or adjust size on mobile */
+@media (max-width: 768px) {
+    .top-right-qr {
+        position: static;
+        margin-top: 1rem;
+        flex-direction: row;
+    }
+}
+
+.qr-card {
+    background: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    margin-bottom: 2rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.qr-card h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.payment-qr {
+    width: 100%;
+    max-width: 250px;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    border: 2px solid #333;
+}
+
+.bank-details {
+    color: var(--text-color);
+    line-height: 1.6;
+    font-size: 0.95rem;
+    background: #222;
+    padding: 1rem;
+    border-radius: 10px;
+}
+
+.form-section {
+    max-width: 500px;
+    margin: 0 auto;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.form-group label i {
+    margin-right: 8px;
+    width: 20px;
+    text-align: center;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group textarea {
+    width: 100%;
+    padding: 1rem;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Prompt', sans-serif;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* File Upload Styling */
+.file-upload-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+}
+
+.file-upload-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-upload-btn {
+    border: 2px dashed #444;
+    color: #888;
+    background-color: #222;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.file-upload-wrapper:hover .file-upload-btn {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+#fileName {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+}
+
+#preview-container {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+#preview-image {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 10px;
+    border: 1px solid #444;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary-color);
+    color: #000;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Prompt', sans-serif;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.btn-primary:hover {
+    background: #F4C430;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+.btn-secondary {
+    padding: 0.8rem 2rem;
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'Prompt', sans-serif;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    background: var(--primary-color);
+    color: #000;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 2rem;
+    color: #888;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.back-link:hover {
+    color: var(--primary-color);
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.success-icon {
+    font-size: 4rem;
+    color: #4CAF50;
+    margin-bottom: 1rem;
+}
+
+.modal-content h2 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.modal-content p {
+    color: #ccc;
+    margin-bottom: 2rem;
+}
+
+/* Select Dropdown Styling */
+.form-group select {
+    width: 100%;
+    padding: 1rem;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Prompt', sans-serif;
+    font-size: 1rem;
+    appearance: none;
+    /* Remove default arrow */
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D4AF37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Custom Select Dropdown */
+.custom-select-container {
+    position: relative;
+    width: 100%;
+}
+
+.select-selected {
+    background-color: #222;
+    color: #fff;
+    padding: 1rem;
+    border: 1px solid #444;
+    border-radius: 10px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.select-selected:hover {
+    border-color: var(--primary-color);
+}
+
+.select-selected.select-arrow-active {
+    border-color: var(--primary-color);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.select-items {
+    position: absolute;
+    background-color: #222;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    border: 1px solid var(--primary-color);
+    border-top: none;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.select-hide {
+    display: none;
+}
+
+.select-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #333;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.select-item:last-child {
+    border-bottom: none;
+}
+
+.select-item:hover {
+    background-color: #333;
+    color: var(--primary-color);
+}
+
+.same-as-selected {
+    background-color: #333;
+    color: var(--primary-color);
+}
+
+.bank-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: #fff;
+    /* Some logos might have transparent bg */
+    padding: 2px;
+}
+
+.select-selected img.bank-icon {
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* Invert logo color for dark theme */
+.envelope-page .logo {
+    filter: invert(1);
+    width: 150px;
+    /* Increased size for better visibility */
+}
+
+/* Footer Credit */
+.credit {
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: 3rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Slot Machine Styles */
+.slot-machine-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.slot-machine {
+    display: flex;
+    justify-content: center;
+    /* Center horizontally */
+    align-items: center;
+    background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.5),
+        inset 0 2px 10px rgba(212, 175, 55, 0.1);
+    border: 3px solid #D4AF37;
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    /* Narrower container for single reel */
+    margin: 0 auto;
+    /* Center container */
+}
+
+.reel {
+    width: 100%;
+    /* Full width */
+    height: 150px;
+    /* Fixed height per reel */
+    background: #000;
+    border: 2px solid #D4AF37;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.reel-strip {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    /* Horizontal items */
+    transition: none;
+}
+
+.reel-item {
+    width: 150px;
+    /* Fixed width per item */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    border-right: 1px solid #333;
+    /* Separator */
+    background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+    flex-shrink: 0;
+    /* Don't shrink */
+}
+
+.reel-item img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid #D4AF37;
+    object-fit: cover;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.slot-frame {
+    position: absolute;
+    height: 100%;
+    width: 150px;
+    /* Highlight center column */
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    border-left: 3px solid #D4AF37;
+    border-right: 3px solid #D4AF37;
+    box-shadow:
+        0 0 20px rgba(212, 175, 55, 0.5),
+        inset 0 0 20px rgba(212, 175, 55, 0.2);
+    z-index: 10;
+    background: rgba(212, 175, 55, 0.05);
+    /* Slight highlight */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .slot-machine {
+        gap: 10px;
+        padding: 30px 20px;
+    }
+
+    .reel {
+        width: 100px;
+        height: 300px;
+    }
+
+    .reel-item {
+        height: 100px;
+    }
+
+    .reel-item img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .reel-item .name {
+        font-size: 11px;
+    }
+
+    .slot-frame {
+        height: 100px;
+    }
+}
+
+/* Make slot machine clickable */
+.slot-machine-container {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.slot-machine-container:hover {
+    transform: scale(1.02);
+}
+
+.slot-machine-container:active {
+    transform: scale(0.98);
+}
+
+
+/* Winner Glow Animation */
+.winner-glow {
+    animation: winnerPulse 1s infinite;
+    border-color: #fff !important;
+    box-shadow: 0 0 50px rgba(255, 255, 255, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.5) !important;
+}
+
+@keyframes winnerPulse {
+    0% {
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 60px rgba(212, 175, 55, 1);
+    }
+
+    100% {
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+    }
+}

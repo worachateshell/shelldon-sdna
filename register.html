@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Nan & Shell Wedding</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Prompt:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .line-btn {
+            background-color: #06C755;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.3s;
+        }
+
+        .line-btn:hover {
+            background-color: #05a546;
+        }
+
+        .line-icon {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 5px;
+            padding: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reg-container">
+        <div class="wedding-logo">
+            <img src="logo.png" alt="Nan & Shell Wedding" style="max-width: 200px; filter: invert(1);">
+            <p style="color: #888; margin-top: 1rem;">Guest Registration</p>
+        </div>
+
+        <div id="reg-form-container" class="display-box"
+            style="flex-direction: column; min-height: auto; padding: 2rem;">
+
+            <div id="login-section">
+                <p style="margin-bottom: 1.5rem; color: #ccc;">Please login with LINE to register</p>
+                <a href="/auth/line" style="text-decoration: none; width: 100%;">
+                    <button class="line-btn">
+                        <!-- Simple LINE Icon SVG -->
+                        <svg class="line-icon" viewBox="0 0 24 24" fill="#06C755">
+                            <path
+                                d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.019 9.614.388.084.915.259 1.049.595.12.3.079.74.038 1.029l-.155.929c-.047.28-.216 1.096.958.58 3.904-2.146 5.324-3.453 7.245-5.912 1.334-1.696 2.846-3.87 2.846-6.835z" />
+                        </svg>
+                        Login with LINE
+                    </button>
+                </a>
+            </div>
+
+            <div id="success-section" style="display: none;">
+                <h2 style="color: #D4AF37; margin-bottom: 1rem;">Welcome!</h2>
+                <p style="color: #fff;">You have successfully registered.</p>
+                <p style="color: #888; font-size: 0.9rem; margin-top: 0.5rem;">Your name will appear on the screen
+                    shortly.</p>
+            </div>
+
+            <div id="already-registered-section" style="display: none;">
+                <h2 style="color: #4CAF50; margin-bottom: 1rem;">Already Registered!</h2>
+                <p style="color: #fff;">คุณทำการลงทะเบียนเรียบร้อยแล้ว</p>
+                <p style="color: #888; font-size: 0.9rem; margin-top: 0.5rem;">You have already registered for this
+                    event.</p>
+            </div>
+
+            <div id="error-section" style="display: none;">
+                <h2 style="color: #f44336; margin-bottom: 1rem;">Error</h2>
+                <p style="color: #fff;">Registration failed. Please try again.</p>
+                <a href="/register.html" class="btn secondary-btn" style="margin-top: 1rem; display: inline-block;">Try
+                    Again</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Check URL params for status
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status');
+
+        if (status === 'success') {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('success-section').style.display = 'block';
+        } else if (status === 'already_registered') {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('already-registered-section').style.display = 'block';
+        } else if (status === 'error') {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('error-section').style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>

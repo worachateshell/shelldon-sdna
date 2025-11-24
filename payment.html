@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Envelope - Nan & Shell Wedding</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="container envelope-page">
+        <header>
+            <img src="wedding-logo.png" alt="Nan & Shell Logo" class="logo">
+
+            <p class="subtitle">ร่วมอวยพรและใส่ซองให้บ่าวสาว</p>
+        </header>
+
+        <main>
+            <div class="qr-section">
+                <div class="qr-card">
+
+                    <img src="payment_qr.jpg" alt="Payment QR Code" class="payment-qr">
+                    <p class="bank-details">
+                        ธนาคาร: <strong>KBank (กสิกรไทย)</strong><br>
+                        เลขบัญชี: <strong>058-3-90945-1</strong><br>
+                        ชื่อบัญชี: <strong>นาย วรเชษฐ์ อุส่าห์ดี</strong>
+                    </p>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <form id="envelopeForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="name"><i class="fas fa-user"></i> ชื่อของคุณ (Your Name)</label>
+                        <input type="text" id="name" name="name" required placeholder="ระบุชื่อผู้ให้">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount"><i class="fas fa-coins"></i> จำนวนเงิน (Amount)</label>
+                        <input type="number" id="amount" name="amount" placeholder="ระบุจำนวนเงิน (ไม่บังคับ)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bank"><i class="fas fa-university"></i> ธนาคารที่โอน (Bank)</label>
+                        <div class="custom-select-container">
+                            <select id="bank" name="bank" style="display: none;">
+                                <option value="" disabled selected>เลือกธนาคาร</option>
+                                <option value="kbank"
+                                    data-icon="https://cdn.jsdelivr.net/gh/casperstack/thai-banks-logo/src/icons/th/kbank.svg">
+                                    กสิกรไทย (KBank)</option>
+                                <option value="scb"
+                                    data-icon="https://cdn.jsdelivr.net/gh/casperstack/thai-banks-logo/src/icons/th/scb.svg">
+                                    ไทยพาณิชย์ (SCB)</option>
+                                <option value="ktb"
+                                    data-icon="https://cdn.jsdelivr.net/gh/casperstack/thai-banks-logo/src/icons/th/ktb.svg">
+                                    กรุงไทย (KTB)</option>
+                                <option value="bbl"
+                                    data-icon="https://cdn.jsdelivr.net/gh/casperstack/thai-banks-logo/src/icons/th/bbl.svg">
+                                    กรุงเทพ (BBL)</option>
+                                <option value="gsb"
+                                    data-icon="https://cdn.jsdelivr.net/gh/casperstack/thai-banks-logo/src/icons/th/gsb.svg">
+                                    ออมสิน (GSB)</option>
+                                <option value="ttb"
+                                    data-icon="https://cdn.jsdelivr.net/gh/casperstack/thai-banks-logo/src/icons/th/ttb.svg">
+                                    ทหารไทยธนชาต (ttb)</option>
+                                <option value="bay"
+                                    data-icon="https://cdn.jsdelivr.net/gh/casperstack/thai-banks-logo/src/icons/th/bay.svg">
+                                    กรุงศรี (Krungsri)</option>
+                                <option value="baac"
+                                    data-icon="https://cdn.jsdelivr.net/gh/casperstack/thai-banks-logo/src/icons/th/baac.svg">
+                                    ธ.ก.ส. (BAAC)</option>
+                                <option value="cimb"
+                                    data-icon="https://cdn.jsdelivr.net/gh/casperstack/thai-banks-logo/src/icons/th/cimb.svg">
+                                    ซีไอเอ็มบี (CIMB)</option>
+                                <option value="uob"
+                                    data-icon="https://cdn.jsdelivr.net/gh/casperstack/thai-banks-logo/src/icons/th/uob.svg">
+                                    ยูโอบี (UOB)</option>
+                                <option value="other">อื่นๆ (Other)</option>
+                            </select>
+
+                            <div class="select-selected" id="customSelectTrigger">
+                                <span>เลือกธนาคาร</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="select-items select-hide" id="customSelectOptions">
+                                <!-- Options will be populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="slip"><i class="fas fa-file-invoice"></i> แนบสลิปโอนเงิน (Upload Slip)</label>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="slip" name="slip" accept="image/*">
+                            <div class="file-upload-btn">
+                                <i class="fas fa-cloud-upload-alt"></i> เลือกรูปภาพ
+                            </div>
+                            <span id="fileName">ยังไม่ได้เลือกไฟล์</span>
+                        </div>
+                        <div id="preview-container" class="hidden">
+                            <img id="preview-image" src="" alt="Slip Preview">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wish"><i class="fas fa-heart"></i> คำอวยพร (Wishes)</label>
+                        <textarea id="wish" name="wish" rows="4" required
+                            placeholder="เขียนคำอวยพรถึงบ่าวสาว..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> ส่งคำอวยพร (Send Wish)
+                    </button>
+                </form>
+            </div>
+        </main>
+
+
+        <footer>
+            <p class="credit">Designed and developed by shelldon</p>
+            <p class="credit" style="margin-top: 0.5rem;">Used for #SDNAWEDDING</p>
+        </footer>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal hidden">
+        <div class="modal-content">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h2>ขอบคุณสำหรับคำอวยพร!</h2>
+            <p>ขอให้มีความสุขมากๆ นะคะ/ครับ</p>
+            <button id="closeModal" class="btn-secondary">ปิด</button>
+        </div>
+    </div>
+
+    <script>
+        // File Upload Preview & Name
+        const fileInput = document.getElementById('slip');
+        const fileName = document.getElementById('fileName');
+        const previewContainer = document.getElementById('preview-container');
+        const previewImage = document.getElementById('preview-image');
+
+        fileInput.addEventListener('change', function (e) {
+            if (this.files && this.files[0]) {
+                fileName.textContent = this.files[0].name;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
+                }
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                fileName.textContent = 'ยังไม่ได้เลือกไฟล์';
+                previewContainer.classList.add('hidden');
+            }
+        });
+
+        // Form Submission
+        document.getElementById('envelopeForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังส่ง...';
+
+            try {
+                const response = await fetch('/api/envelope', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('successModal').classList.remove('hidden');
+                    this.reset();
+                    fileName.textContent = 'ยังไม่ได้เลือกไฟล์';
+                    previewContainer.classList.add('hidden');
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        });
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('successModal').classList.add('hidden');
+        });
+
+        // Custom Select Logic
+        const customSelectContainer = document.querySelector('.custom-select-container');
+        const selectElement = customSelectContainer.querySelector('select');
+        const selectedDisplay = document.getElementById('customSelectTrigger');
+        const optionsContainer = document.getElementById('customSelectOptions');
+
+        // Populate Options
+        Array.from(selectElement.options).forEach((option, index) => {
+            if (index === 0) return; // Skip placeholder
+
+            const div = document.createElement('div');
+            div.className = 'select-item';
+
+            // Icon
+            const iconUrl = option.getAttribute('data-icon');
+            if (iconUrl) {
+                const img = document.createElement('img');
+                img.src = iconUrl;
+                img.className = 'bank-icon';
+                div.appendChild(img);
+            }
+
+            // Text
+            const text = document.createTextNode(option.text);
+            div.appendChild(text);
+
+            div.addEventListener('click', () => {
+                // Update Select
+                selectElement.value = option.value;
+
+                // Update Display
+                selectedDisplay.innerHTML = '';
+                if (iconUrl) {
+                    const img = document.createElement('img');
+                    img.src = iconUrl;
+                    img.className = 'bank-icon';
+                    selectedDisplay.appendChild(img);
+                }
+                const span = document.createElement('span');
+                span.textContent = option.text;
+                selectedDisplay.appendChild(span);
+
+                const arrow = document.createElement('i');
+                arrow.className = 'fas fa-chevron-down';
+                selectedDisplay.appendChild(arrow);
+
+                closeSelect();
+            });
+
+            optionsContainer.appendChild(div);
+        });
+
+        // Toggle Dropdown
+        selectedDisplay.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeAllSelect(selectedDisplay);
+            optionsContainer.classList.toggle('select-hide');
+            selectedDisplay.classList.toggle('select-arrow-active');
+        });
+
+        function closeSelect() {
+            optionsContainer.classList.add('select-hide');
+            selectedDisplay.classList.remove('select-arrow-active');
+        }
+
+        function closeAllSelect(elmnt) {
+            if (elmnt !== selectedDisplay) {
+                closeSelect();
+            }
+        }
+
+        document.addEventListener('click', closeAllSelect);
+    </script>
+</body>
+
+</html>
