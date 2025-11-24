@@ -9,6 +9,7 @@ const { google } = require('googleapis');
 const axios = require('axios');
 const cookieSession = require('cookie-session');
 const multer = require('multer');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
 // Multer Setup
 const storage = multer.diskStorage({
@@ -74,6 +75,56 @@ async function getDriveClient() {
         return drive;
     } catch (e) {
         console.error("Google Drive Auth Error:", e.message);
+        return null;
+    }
+}
+
+// Cloudflare R2 Client Setup
+let r2Client = null;
+function getR2Client() {
+    if (r2Client) return r2Client;
+
+    if (!process.env.R2_ACCOUNT_ID || !process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY) {
+        console.log("R2 credentials not configured, skipping R2 upload");
+        return null;
+    }
+
+    r2Client = new S3Client({
+        region: 'auto',
+        endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+        credentials: {
+            accessKeyId: process.env.R2_ACCESS_KEY_ID,
+            secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+        },
+    });
+    return r2Client;
+}
+
+async function uploadToR2(filePath, mimeType, originalName) {
+    const client = getR2Client();
+    if (!client) return null;
+
+    try {
+        const fileContent = fs.readFileSync(filePath);
+        const fileName = `slips/${Date.now()}-${originalName}`;
+
+        const command = new PutObjectCommand({
+            Bucket: process.env.R2_BUCKET_NAME,
+            Key: fileName,
+            Body: fileContent,
+            ContentType: mimeType,
+        });
+
+        await client.send(command);
+
+        // Return public URL (if bucket has public access configured)
+        const publicUrl = process.env.R2_PUBLIC_URL
+            ? `${process.env.R2_PUBLIC_URL}/${fileName}`
+            : `https://${process.env.R2_BUCKET_NAME}.${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${fileName}`;
+
+        return publicUrl;
+    } catch (err) {
+        console.error("R2 Upload Error:", err.message);
         return null;
     }
 }
@@ -298,10 +349,16 @@ app.post('/api/envelope', upload.single('slip'), async (req, res) => {
         const { name, amount, wish, bank } = req.body;
         const slipPath = req.file ? `/uploads/${req.file.filename}` : null;
 
-        // Upload to Drive
-        let driveLink = null;
+        // Upload to R2 (preferred) or Drive (fallback)
+        let uploadedLink = null;
         if (req.file) {
-            driveLink = await uploadToDrive(req.file.path, req.file.mimetype, req.file.originalname);
+            // Try R2 first
+            uploadedLink = await uploadToR2(req.file.path, req.file.mimetype, req.file.originalname);
+
+            // Fallback to Google Drive if R2 fails
+            if (!uploadedLink) {
+                uploadedLink = await uploadToDrive(req.file.path, req.file.mimetype, req.file.originalname);
+            }
         }
 
         const wishData = {
@@ -309,7 +366,7 @@ app.post('/api/envelope', upload.single('slip'), async (req, res) => {
             amount,
             bank,
             wish,
-            slipPath: driveLink || slipPath, // Use Drive link if available, else local path
+            slipPath: uploadedLink || slipPath, // Use uploaded link if available, else local path
             timestamp: new Date().toISOString()
         };
 
