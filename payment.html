@@ -182,6 +182,10 @@
                     this.reset();
                     fileName.textContent = 'ยังไม่ได้เลือกไฟล์';
                     previewContainer.classList.add('hidden');
+
+                    // Reset bank select dropdown
+                    selectedDisplay.innerHTML = '<span>เลือกธนาคาร</span><i class="fas fa-chevron-down"></i>';
+                    selectElement.selectedIndex = 0;
                 } else {
                     alert('เกิดข้อผิดพลาด: ' + (result.error || 'Unknown error'));
                 }
