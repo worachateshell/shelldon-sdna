@@ -86,6 +86,22 @@ The server will start at `http://localhost:3000`.
 └── uploads/                # Temporary upload directory
 ```
 
+## 🌐 Deployment
+
+### Cloudflare Tunnel (Recommended)
+
+Deploy your application securely with Cloudflare Tunnel:
+
+```bash
+./start-tunnel.sh
+```
+
+For detailed setup instructions, see [CLOUDFLARE_TUNNEL.md](CLOUDFLARE_TUNNEL.md).
+
+### Other Deployment Options
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for PM2, Docker, and VPS deployment guides.
+
 ## 🔒 Security Note
 
 This project uses a `.gitignore` file to ensure sensitive information like `.env` and `credentials.json` are not committed to the repository. **Never share your private keys.**
