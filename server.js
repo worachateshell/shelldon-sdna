@@ -61,23 +61,7 @@ async function getSheetsClient() {
     }
 }
 
-let drive = null;
-async function getDriveClient() {
-    if (drive) return drive;
-
-    try {
-        const auth = new google.auth.GoogleAuth({
-            keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-            scopes: [...SCOPES, 'https://www.googleapis.com/auth/drive.file'],
-        });
-        const client = await auth.getClient();
-        drive = google.drive({ version: 'v3', auth: client });
-        return drive;
-    } catch (e) {
-        console.error("Google Drive Auth Error:", e.message);
-        return null;
-    }
-}
+// Google Drive integration removed - using R2 only
 
 // Cloudflare R2 Client Setup
 let r2Client = null;
@@ -129,38 +113,7 @@ async function uploadToR2(filePath, mimeType, originalName) {
     }
 }
 
-async function uploadToDrive(filePath, mimeType, originalName) {
-    const driveClient = await getDriveClient();
-    if (!driveClient) return null;
-
-    try {
-        const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
-        const fileMetadata = {
-            name: originalName,
-            parents: folderId ? [folderId] : [], // Upload to specific folder if ID provided
-        };
-        const media = {
-            mimeType: mimeType,
-            body: fs.createReadStream(filePath),
-        };
-
-        const response = await driveClient.files.create({
-            resource: fileMetadata,
-            media: media,
-            fields: 'id, webViewLink, webContentLink',
-        });
-
-        // Make the file readable by anyone with the link (optional, but good for easy viewing)
-        // Or rely on folder permissions if uploaded to a shared folder.
-        // Let's assume folder permissions are sufficient if folderId is provided.
-        // If not, we might want to share it.
-
-        return response.data.webViewLink;
-    } catch (err) {
-        console.error("Drive Upload Error:", err.message);
-        return null;
-    }
-}
+// Google Drive upload function removed - using R2 only
 
 // Routes
 
@@ -349,15 +302,12 @@ app.post('/api/envelope', upload.single('slip'), async (req, res) => {
         const { name, amount, wish, bank } = req.body;
         const slipPath = req.file ? `/uploads/${req.file.filename}` : null;
 
-        // Upload to R2 (preferred) or Drive (fallback)
+        // Upload to R2 only
         let uploadedLink = null;
         if (req.file) {
-            // Try R2 first
             uploadedLink = await uploadToR2(req.file.path, req.file.mimetype, req.file.originalname);
-
-            // Fallback to Google Drive if R2 fails
             if (!uploadedLink) {
-                uploadedLink = await uploadToDrive(req.file.path, req.file.mimetype, req.file.originalname);
+                console.log('R2 upload failed, file saved locally at:', slipPath);
             }
         }
 
