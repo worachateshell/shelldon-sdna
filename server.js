@@ -173,6 +173,7 @@ app.get('/auth/line', (req, res) => {
         redirect_uri: process.env.LINE_CALLBACK_URL,
         state: 'random_state_string', // Should be randomized
         scope: 'profile openid',
+        bot_prompt: 'aggressive', // Prompt to add LINE OA as friend
     });
     res.redirect(`https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`);
 });
@@ -224,7 +225,8 @@ async function saveGuestToSheet(name, pictureUrl, lineId) {
         const guests = getLocalGuests();
         const exists = guests.some(g => g.lineId === lineId);
         if (!exists) {
-            guests.push({ name, pictureUrl, lineId });
+            const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
+            guests.push({ name, pictureUrl, lineId, timestamp });
             fs.writeFileSync(path.join(__dirname, 'guests.json'), JSON.stringify(guests));
             return true; // New user
         }
@@ -246,38 +248,36 @@ async function saveGuestToSheet(name, pictureUrl, lineId) {
             // Add Header
             await client.spreadsheets.values.append({
                 spreadsheetId: process.env.GOOGLE_SHEET_ID,
-                range: 'Users!A:C',
+                range: 'Users!A:D',
                 valueInputOption: 'USER_ENTERED',
-                resource: { values: [['Name', 'Picture URL', 'Line ID']] }
+                resource: { values: [['Name', 'Picture URL', 'LINE ID', 'Timestamp']] }
             });
         }
 
-        // Check if user already exists (by LINE ID)
-        const existingData = await client.spreadsheets.values.get({
+        // Check if user exists
+        const rows = await client.spreadsheets.values.get({
             spreadsheetId: process.env.GOOGLE_SHEET_ID,
-            range: 'Users!A:C'
+            range: 'Users!C:C', // Check LINE ID column
         });
 
-        const rows = existingData.data.values || [];
-        const userExists = rows.some(row => row[2] === lineId); // Column C = Line ID
-
-        if (userExists) {
+        const existingIds = rows.data.values ? rows.data.values.flat() : [];
+        if (existingIds.includes(lineId)) {
             console.log(`User ${name} (${lineId}) already exists. Skipping.`);
-            return false; // Already registered
+            return false;
         }
 
-        // Add new user
+        // Add new user with timestamp
+        const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
         await client.spreadsheets.values.append({
             spreadsheetId: process.env.GOOGLE_SHEET_ID,
-            range: 'Users!A:C',
+            range: 'Users!A:D',
             valueInputOption: 'USER_ENTERED',
-            resource: {
-                values: [[name, pictureUrl, lineId]]
-            }
+            resource: { values: [[name, pictureUrl, lineId, timestamp]] }
         });
         return true; // New user added
     } catch (err) {
         console.error("Failed to append to sheet:", err.message);
+        return false; // Indicate failure
     }
 }
 

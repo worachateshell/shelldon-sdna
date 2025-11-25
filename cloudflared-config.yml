@@ -1,0 +1,7 @@
+tunnel: 93f59197-5274-4727-bf46-40c3acf04b4b
+credentials-file: /Users/mbp13-2020-/.cloudflared/93f59197-5274-4727-bf46-40c3acf04b4b.json
+
+ingress:
+  - hostname: shelldon-worachate.uk
+    service: http://localhost:3000
+  - service: http_status:404

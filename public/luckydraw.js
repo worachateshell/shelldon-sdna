@@ -81,15 +81,15 @@ function createReelItem(guest) {
     } else {
         // Placeholder if no image
         const placeholder = document.createElement('div');
-        placeholder.style.width = '80px';
-        placeholder.style.height = '80px';
+        placeholder.style.width = '140px';
+        placeholder.style.height = '140px';
         placeholder.style.borderRadius = '50%';
         placeholder.style.background = 'linear-gradient(145deg, #333, #1a1a1a)';
-        placeholder.style.border = '2px solid #D4AF37';
+        placeholder.style.border = '4px solid #fff';
         placeholder.style.display = 'flex';
         placeholder.style.alignItems = 'center';
         placeholder.style.justifyContent = 'center';
-        placeholder.style.fontSize = '32px';
+        placeholder.style.fontSize = '48px';
         placeholder.style.color = '#D4AF37';
         placeholder.textContent = guest.name.charAt(0).toUpperCase();
         item.appendChild(placeholder);
@@ -119,7 +119,7 @@ function spin() {
 
     const reels = ['reel1'];
     const spinDurations = [3000]; // Duration for the single reel
-    const itemWidth = 150; // Fixed width per item
+    const itemWidth = 220; // Fixed width per item
 
     const winnerIndex = Math.floor(Math.random() * guests.length);
     const winner = guests[winnerIndex];

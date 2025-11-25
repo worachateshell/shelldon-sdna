@@ -1,4 +1,4 @@
-# Wedding Game & Digital Envelope
+# Wedding Game & Upload Slip
 
 A modern, interactive wedding website featuring LINE Login, Digital Envelopes, and a Lucky Draw game. Built with Node.js, Express, and Google Cloud integrations.
 
