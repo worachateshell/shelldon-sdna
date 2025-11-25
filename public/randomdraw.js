@@ -125,6 +125,7 @@ function startSpin() {
 
         // Update image
         if (currentGuest.pictureUrl) {
+            winnerImage.style.display = 'block'; // Ensure visible
             winnerImage.src = currentGuest.pictureUrl;
             winnerImage.onerror = () => {
                 winnerImage.style.display = 'none';
