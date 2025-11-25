@@ -29,8 +29,8 @@
         }
 
         .slot-display {
-            background: rgba(0, 0, 0, 0.3);
-            border: 3px solid rgba(255, 255, 255, 0.1);
+            background: transparent;
+            border: none;
             border-radius: 20px;
             padding: 3rem 2rem;
             margin-bottom: 2rem;
@@ -43,16 +43,7 @@
             overflow: hidden;
         }
 
-        .slot-display::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
-            pointer-events: none;
-        }
+
 
         .name-slot {
             font-size: 4rem;
