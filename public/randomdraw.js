@@ -97,7 +97,7 @@ function startSpin() {
     btn.textContent = '🎲 กำลังสุ่ม...';
     nameSlot.classList.add('spinning');
     nameSlot.classList.remove('winner');
-    winnerImage.style.display = 'none';
+    winnerImage.style.display = 'block'; // Show image during spinning
 
     let speed = 50; // Initial speed (ms)
     let iterations = 0;
@@ -105,7 +105,22 @@ function startSpin() {
 
     spinInterval = setInterval(() => {
         currentIndex = (currentIndex + 1) % guests.length;
-        nameSlot.textContent = guests[currentIndex].name;
+        const currentGuest = guests[currentIndex];
+
+        // Update name
+        nameSlot.textContent = currentGuest.name;
+
+        // Update image
+        if (currentGuest.pictureUrl) {
+            winnerImage.src = currentGuest.pictureUrl;
+            winnerImage.onerror = () => {
+                // Show placeholder if image fails
+                winnerImage.style.display = 'none';
+            };
+        } else {
+            winnerImage.style.display = 'none';
+        }
+
         playTick();
 
         iterations++;

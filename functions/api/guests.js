@@ -48,7 +48,7 @@ export async function onRequest(context) {
     const { env } = context;
 
     try {
-        const response = await getSheetValues(env, 'Users!A:C');
+        const response = await getSheetValues(env, 'Users!A2:C');
         const rows = response.values;
 
         if (!rows || rows.length === 0) {
@@ -57,12 +57,12 @@ export async function onRequest(context) {
             });
         }
 
-        // Transform rows to objects
+        // Transform rows to objects (starting from row 2, no header)
         // Format: { name: "Name", pictureUrl: "URL" }
         const guests = rows.map(row => ({
             name: row[0],
             pictureUrl: row[1] || null
-        })).filter(g => g.name && g.name !== 'Name'); // Filter out header if exists
+        })).filter(g => g.name); // Filter out empty rows
 
         return new Response(JSON.stringify(guests), {
             headers: { 'Content-Type': 'application/json' }
