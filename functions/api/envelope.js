@@ -65,19 +65,36 @@ export async function onRequest(context) {
         let slipUrl = null;
 
         if (file && file instanceof File) {
-            const filename = `slips/${Date.now()}-${file.name}`;
-            // Upload to R2 using binding
-            await env.WEDDING_SLIPS.put(filename, file.stream(), {
-                httpMetadata: { contentType: file.type }
-            });
+            try {
+                // Check if R2 binding exists
+                if (!env.WEDDING_SLIPS) {
+                    console.error('R2 Bucket binding WEDDING_SLIPS not found');
+                    throw new Error('R2 storage not configured');
+                }
 
-            // Construct public URL
-            // Assuming R2_PUBLIC_URL is set to the custom domain or r2.dev URL
-            if (env.R2_PUBLIC_URL) {
-                slipUrl = `${env.R2_PUBLIC_URL}/${filename}`;
-            } else {
-                // Fallback if no public URL configured (might not be accessible)
-                slipUrl = filename;
+                const filename = `slips/${Date.now()}-${file.name}`;
+                console.log('Uploading to R2:', filename);
+
+                // Upload to R2 using binding
+                await env.WEDDING_SLIPS.put(filename, file.stream(), {
+                    httpMetadata: { contentType: file.type }
+                });
+
+                console.log('R2 upload successful:', filename);
+
+                // Construct public URL
+                if (env.R2_PUBLIC_URL) {
+                    slipUrl = `${env.R2_PUBLIC_URL}/${filename}`;
+                } else {
+                    // Fallback: construct r2.dev URL
+                    slipUrl = `https://pub-${env.R2_ACCOUNT_ID || 'unknown'}.r2.dev/${filename}`;
+                }
+
+                console.log('Slip URL:', slipUrl);
+            } catch (uploadError) {
+                console.error('R2 upload error:', uploadError);
+                // Continue without slip URL - still save to sheets
+                slipUrl = `ERROR: ${uploadError.message}`;
             }
         }
 
