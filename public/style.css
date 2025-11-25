@@ -913,3 +913,107 @@ header {
         box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
     }
 }
+/* Lucky Draw Grid Styles */
+.lucky-draw-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.lucky-draw-title {
+    text-align: center;
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 3rem;
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+}
+
+.guests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+    padding: 1rem;
+}
+
+.guest-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.guest-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.guest-card img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.guest-card .name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    word-wrap: break-word;
+    max-width: 100%;
+}
+
+.guest-card.winner {
+    animation: winnerGlow 1s infinite;
+    border-color: #fff;
+    transform: scale(1.1);
+    z-index: 10;
+}
+
+@keyframes winnerGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(212, 175, 55, 0.8);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.8), 0 0 60px rgba(212, 175, 55, 1);
+    }
+}
+
+.draw-button-container {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.draw-button-container .btn {
+    max-width: 400px;
+    font-size: 1.5rem;
+    padding: 1.5rem 3rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .guests-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .guest-card img {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .lucky-draw-title {
+        font-size: 2rem;
+    }
+}

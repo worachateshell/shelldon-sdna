@@ -1,202 +1,147 @@
+// Lucky Draw - Grid Based
 let guests = [];
-let isSpinning = false;
+let isDrawing = false;
 
-function init() {
-    fetchGuests();
-    // Poll for new guests every 5 seconds
-    setInterval(fetchGuests, 5000);
-
-    // Click on Random button to spin
-    const randomBtn = document.getElementById('random-btn');
-    if (randomBtn) {
-        randomBtn.addEventListener('click', () => {
-            if (!isSpinning) spin();
-        });
-    }
-
-    // Also allow spacebar to spin
-    document.addEventListener('keydown', (e) => {
-        if (e.code === 'Space' && !isSpinning) {
-            e.preventDefault();
-            spin();
-        }
-    });
-}
-
+// Fetch guests from API
 async function fetchGuests() {
-    if (isSpinning) return;
-
     try {
-        const res = await fetch('/api/guests');
-        const newGuests = await res.json();
-
-        const processedGuests = newGuests.map(g => {
-            if (typeof g === 'string') return { name: g, pictureUrl: null };
-            return g;
-        });
-
-        if (processedGuests.length !== guests.length) {
-            guests = processedGuests;
-            if (guests.length > 0) {
-                initializeReels();
-            }
-        }
-    } catch (e) {
-        console.error("Failed to load guests", e);
+        const response = await fetch('/api/guests');
+        const data = await response.json();
+        guests = data.filter(g => g.name && g.pictureUrl);
+        renderGuestCards();
+    } catch (error) {
+        console.error('Error fetching guests:', error);
+        document.getElementById('guests-grid').innerHTML = '<p style="color: #888; text-align: center;">ไม่สามารถโหลดข้อมูลได้</p>';
     }
 }
 
-function initializeReels() {
-    const reels = ['reel1'];
+// Render guest cards in grid
+function renderGuestCards() {
+    const grid = document.getElementById('guests-grid');
 
-    reels.forEach(reelId => {
-        const reel = document.getElementById(reelId);
-        reel.innerHTML = '';
-
-        const strip = document.createElement('div');
-        strip.className = 'reel-strip';
-
-        // Create multiple copies for smooth scrolling
-        const copies = 5;
-        for (let c = 0; c < copies; c++) {
-            guests.forEach(guest => {
-                const item = createReelItem(guest);
-                strip.appendChild(item);
-            });
-        }
-
-        reel.appendChild(strip);
-    });
-}
-
-function createReelItem(guest) {
-    const item = document.createElement('div');
-    item.className = 'reel-item';
-
-    if (guest.pictureUrl) {
-        const img = document.createElement('img');
-        img.src = guest.pictureUrl;
-        img.alt = guest.name;
-        item.appendChild(img);
-    } else {
-        // Placeholder if no image
-        const placeholder = document.createElement('div');
-        placeholder.style.width = '140px';
-        placeholder.style.height = '140px';
-        placeholder.style.borderRadius = '50%';
-        placeholder.style.background = 'linear-gradient(145deg, #333, #1a1a1a)';
-        placeholder.style.border = '4px solid #fff';
-        placeholder.style.display = 'flex';
-        placeholder.style.alignItems = 'center';
-        placeholder.style.justifyContent = 'center';
-        placeholder.style.fontSize = '48px';
-        placeholder.style.color = '#D4AF37';
-        placeholder.textContent = guest.name.charAt(0).toUpperCase();
-        item.appendChild(placeholder);
-    }
-
-    const nameDiv = document.createElement('div');
-    nameDiv.className = 'name';
-    nameDiv.textContent = guest.name;
-    item.appendChild(nameDiv);
-
-    return item;
-}
-
-function spin() {
     if (guests.length === 0) {
-        alert("No guests registered yet!");
+        grid.innerHTML = '<p style="color: #888; text-align: center; grid-column: 1/-1;">ยังไม่มีผู้เข้าร่วม</p>';
         return;
     }
 
-    if (isSpinning) return;
+    grid.innerHTML = '';
+    guests.forEach((guest, index) => {
+        const card = document.createElement('div');
+        card.className = 'guest-card';
+        card.dataset.index = index;
 
-    isSpinning = true;
+        const img = document.createElement('img');
+        img.src = guest.pictureUrl;
+        img.alt = guest.name;
+        img.onerror = () => {
+            img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect fill="%23333" width="120" height="120"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%23D4AF37" font-size="48">' + guest.name.charAt(0) + '</svg>';
+        };
 
-    // Disable button
-    const randomBtn = document.getElementById('random-btn');
-    if (randomBtn) randomBtn.disabled = true;
+        const name = document.createElement('div');
+        name.className = 'name';
+        name.textContent = guest.name;
 
-    const reels = ['reel1'];
-    const spinDurations = [3000]; // Duration for the single reel
-    const itemWidth = 220; // Fixed width per item
-
-    const winnerIndex = Math.floor(Math.random() * guests.length);
-    const winner = guests[winnerIndex];
-
-    // Calculate center offset to align winner in the middle
-    const reelWidth = document.querySelector('.reel').offsetWidth;
-    const centerOffset = (reelWidth / 2) - (itemWidth / 2);
-
-    reels.forEach((reelId, index) => {
-        const reel = document.getElementById(reelId);
-        const strip = reel.querySelector('.reel-strip');
-
-        // Calculate random spins
-        const baseSpins = 5 + Math.random() * 3; // More spins for single reel excitement
-        const oneCycleWidth = guests.length * itemWidth;
-        const finalPosition = -((baseSpins * oneCycleWidth) + (winnerIndex * itemWidth)) + centerOffset;
-
-        // Animate
-        strip.style.transition = `left ${spinDurations[index]}ms cubic-bezier(0.25, 0.1, 0.25, 1)`;
-        strip.style.left = `${finalPosition}px`;
-
-        // Reset to initial position after spin
-        setTimeout(() => {
-            if (index === reels.length - 1) {
-                // Last reel finished
-                setTimeout(() => {
-                    displayWinner(winner);
-                    isSpinning = false;
-                    if (randomBtn) randomBtn.disabled = false;
-                    triggerConfetti();
-
-                    // Reset reels
-                    reels.forEach(rid => {
-                        const r = document.getElementById(rid);
-                        const s = r.querySelector('.reel-strip');
-                        s.style.transition = 'none';
-                        s.style.left = '0px';
-                    });
-                }, 500);
-            }
-        }, spinDurations[index]);
+        card.appendChild(img);
+        card.appendChild(name);
+        grid.appendChild(card);
     });
 }
 
-function displayWinner(winner) {
-    const slotFrame = document.querySelector('.slot-frame');
-    slotFrame.classList.add('winner-glow');
+// Random winner selection with animation
+async function drawWinner() {
+    if (isDrawing || guests.length === 0) return;
 
+    isDrawing = true;
+    const btn = document.getElementById('draw-btn');
+    btn.disabled = true;
+    btn.textContent = '🎲 กำลังสุ่ม...';
+
+    const cards = document.querySelectorAll('.guest-card');
+    cards.forEach(card => card.classList.remove('winner'));
+
+    // Shuffle animation
+    let iterations = 0;
+    const maxIterations = 20;
+    const interval = setInterval(() => {
+        // Remove previous highlight
+        cards.forEach(card => card.classList.remove('winner'));
+
+        // Highlight random card
+        const randomIndex = Math.floor(Math.random() * cards.length);
+        cards[randomIndex].classList.add('winner');
+
+        iterations++;
+        if (iterations >= maxIterations) {
+            clearInterval(interval);
+            selectFinalWinner(cards);
+        }
+    }, 100);
+}
+
+function selectFinalWinner(cards) {
+    // Select final winner
+    const winnerIndex = Math.floor(Math.random() * guests.length);
+    const winnerCard = cards[winnerIndex];
+    const winner = guests[winnerIndex];
+
+    // Remove all highlights
+    cards.forEach(card => card.classList.remove('winner'));
+
+    // Highlight winner
+    winnerCard.classList.add('winner');
+
+    // Scroll to winner
+    winnerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // Trigger confetti
     setTimeout(() => {
-        slotFrame.classList.remove('winner-glow');
-    }, 3000);
+        triggerConfetti();
+
+        // Show winner announcement
+        setTimeout(() => {
+            alert(`🎉 ผู้โชคดี: ${winner.name} 🎉`);
+
+            // Reset button
+            const btn = document.getElementById('draw-btn');
+            btn.disabled = false;
+            btn.textContent = '🎁 ลุ้นรางวัล';
+            isDrawing = false;
+        }, 500);
+    }, 500);
 }
 
 function triggerConfetti() {
-    const duration = 3000;
-    const end = Date.now() + duration;
+    const duration = 3 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
-    (function frame() {
-        confetti({
-            particleCount: 7,
-            angle: 60,
-            spread: 55,
-            origin: { x: 0 },
-            colors: ['#D4AF37', '#FFFFFF', '#333333']
-        });
-        confetti({
-            particleCount: 7,
-            angle: 120,
-            spread: 55,
-            origin: { x: 1 },
-            colors: ['#D4AF37', '#FFFFFF', '#333333']
-        });
+    function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+    }
 
-        if (Date.now() < end) {
-            requestAnimationFrame(frame);
+    const interval = setInterval(function () {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+            return clearInterval(interval);
         }
-    }());
+
+        const particleCount = 50 * (timeLeft / duration);
+        confetti(Object.assign({}, defaults, {
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+        }));
+        confetti(Object.assign({}, defaults, {
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+        }));
+    }, 250);
 }
 
-init();
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    fetchGuests();
+
+    const btn = document.getElementById('draw-btn');
+    btn.addEventListener('click', drawWinner);
+});
