@@ -115,6 +115,7 @@ function startSpin() {
 
     let iterations = 0;
     const maxIterations = 30 + Math.floor(Math.random() * 20);
+    console.log(`Starting spin. Max iterations: ${maxIterations}`);
 
     function spin() {
         currentIndex = (currentIndex + 1) % guests.length;
@@ -139,12 +140,13 @@ function startSpin() {
 
         // Stop spinning
         if (iterations >= maxIterations) {
+            console.log('Max iterations reached. Stopping spin.');
             clearInterval(spinInterval);
             stopSpin();
         } else if (iterations > maxIterations * 0.7) {
             // Slow down
             clearInterval(spinInterval);
-            const newSpeed = 50 + (iterations - Math.floor(maxIterations * 0.7)) * 15;
+            const newSpeed = 50 + (iterations - Math.floor(maxIterations * 0.7)) * 20; // Slower deceleration
             spinInterval = setInterval(spin, newSpeed);
         }
     }
