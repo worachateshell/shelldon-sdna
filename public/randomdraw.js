@@ -74,11 +74,25 @@ async function fetchGuests() {
         if (guests.length === 0) {
             document.getElementById('name-slot').textContent = 'ยังไม่มีผู้เข้าร่วม';
             document.getElementById('pick-btn').disabled = true;
+            document.getElementById('winner-image').style.display = 'none';
+        } else {
+            // Show first guest image on load
+            const winnerImage = document.getElementById('winner-image');
+            if (guests[0].pictureUrl) {
+                winnerImage.src = guests[0].pictureUrl;
+                winnerImage.style.display = 'block';
+                winnerImage.onerror = () => {
+                    winnerImage.style.display = 'none';
+                };
+            } else {
+                winnerImage.style.display = 'none';
+            }
         }
     } catch (error) {
         console.error('Error fetching guests:', error);
         document.getElementById('guest-count').textContent = 'ไม่สามารถโหลดข้อมูลได้';
         document.getElementById('pick-btn').disabled = true;
+        document.getElementById('winner-image').style.display = 'none';
     }
 }
 
