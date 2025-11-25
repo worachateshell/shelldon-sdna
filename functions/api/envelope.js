@@ -100,15 +100,31 @@ export async function onRequest(context) {
 
         const timestamp = new Date().toISOString();
 
-        // Save to Sheets: Name, Amount, Bank, Wish, SlipURL, Timestamp
-        await appendToSheet(env, 'Wishes!A:F', [[name, amount, bank, wish, slipUrl, timestamp]]);
+        // Log what will be saved
+        console.log('Saving to Google Sheets:', {
+            name,
+            amount,
+            bank,
+            wish,
+            slipUrl,
+            timestamp
+        });
 
-        return new Response(JSON.stringify({ success: true, message: "Wish received!" }), {
+        // Save to Sheets: Name, Amount, Bank, Wish, SlipURL, Timestamp
+        const sheetResult = await appendToSheet(env, 'Wishes!A:F', [[name, amount, bank, wish, slipUrl, timestamp]]);
+        console.log('Google Sheets save result:', sheetResult);
+
+        return new Response(JSON.stringify({
+            success: true,
+            message: "Wish received!",
+            slipUrl: slipUrl // Return the URL so we can verify
+        }), {
             headers: { 'Content-Type': 'application/json' }
         });
 
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message }), {
+        console.error('Envelope API error:', err);
+        return new Response(JSON.stringify({ error: err.message, stack: err.stack }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });
