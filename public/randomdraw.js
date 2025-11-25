@@ -111,13 +111,12 @@ function startSpin() {
     btn.textContent = '🎲 กำลังสุ่ม...';
     nameSlot.classList.add('spinning');
     nameSlot.classList.remove('winner');
-    winnerImage.style.display = 'block'; // Show image during spinning
+    winnerImage.style.display = 'block';
 
-    let speed = 50; // Initial speed (ms)
     let iterations = 0;
-    const maxIterations = 30 + Math.floor(Math.random() * 20); // Random between 30-50
+    const maxIterations = 30 + Math.floor(Math.random() * 20);
 
-    spinInterval = setInterval(() => {
+    function spin() {
         currentIndex = (currentIndex + 1) % guests.length;
         const currentGuest = guests[currentIndex];
 
@@ -128,7 +127,6 @@ function startSpin() {
         if (currentGuest.pictureUrl) {
             winnerImage.src = currentGuest.pictureUrl;
             winnerImage.onerror = () => {
-                // Show placeholder if image fails
                 winnerImage.style.display = 'none';
             };
         } else {
@@ -136,21 +134,21 @@ function startSpin() {
         }
 
         playTick();
-
         iterations++;
-
-        // Gradually slow down
-        if (iterations > maxIterations * 0.7) {
-            speed += 10;
-            clearInterval(spinInterval);
-            spinInterval = setInterval(arguments.callee, speed);
-        }
 
         // Stop spinning
         if (iterations >= maxIterations) {
+            clearInterval(spinInterval);
             stopSpin();
+        } else if (iterations > maxIterations * 0.7) {
+            // Slow down
+            clearInterval(spinInterval);
+            const newSpeed = 50 + (iterations - Math.floor(maxIterations * 0.7)) * 15;
+            spinInterval = setInterval(spin, newSpeed);
         }
-    }, speed);
+    }
+
+    spinInterval = setInterval(spin, 50);
 }
 
 // Stop spinning and show winner
