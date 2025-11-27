@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "wrangler pages deploy public --project-name sdnawedding"
   },
   "keywords": [],
   "author": "",
@@ -24,5 +25,8 @@
     "multer": "^2.0.2",
     "qrcode": "^1.5.4",
     "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "wrangler": "^4.50.0"
   }
 }

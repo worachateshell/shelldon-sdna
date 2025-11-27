@@ -33,7 +33,7 @@ const PORT = 3000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieSession({
     name: 'session',
     keys: [process.env.SESSION_SECRET || 'secret'],
@@ -136,14 +136,14 @@ app.get('/api/guests', async (req, res) => {
             return res.json([]);
         }
 
-        // Transform rows to objects
-        // Assuming Row 1 is header, start from Row 2? Or just raw data.
-        // Let's assume raw data for simplicity or check if first row is header.
-        // Format: { name: "Name", pictureUrl: "URL" }
-        const guests = rows.map(row => ({
-            name: row[0],
-            pictureUrl: row[1] || null
-        })).filter(g => g.name && g.name !== 'Name'); // Filter out header if exists
+        // Transform rows to objects, skip header row (first row)
+        const guests = rows
+            .slice(1) // Skip header row
+            .map(row => ({
+                name: row[0],
+                pictureUrl: row[1] || null
+            }))
+            .filter(g => g.name && g.name.trim()); // Filter out empty names
 
         res.json(guests);
     } catch (err) {

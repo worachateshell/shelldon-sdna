@@ -217,3 +217,59 @@ function triggerConfetti() {
 }
 
 init();
+
+// Countdown Timer to December 13, 2025
+function updateCountdown() {
+    // Set wedding date to December 13, 2025 at midnight Thailand time
+    const weddingDate = new Date('2025-12-13T00:00:00+07:00').getTime();
+    const now = new Date().getTime();
+    const distance = weddingDate - now;
+
+    console.log('Wedding Date:', new Date(weddingDate));
+    console.log('Now:', new Date(now));
+    console.log('Distance (ms):', distance);
+
+    const daysEl = document.getElementById('days');
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const secondsEl = document.getElementById('seconds');
+
+    // Check if elements exist
+    if (!daysEl || !hoursEl || !minutesEl || !secondsEl) {
+        console.error('Countdown elements not found!');
+        console.log('Days element:', daysEl);
+        console.log('Hours element:', hoursEl);
+        console.log('Minutes element:', minutesEl);
+        console.log('Seconds element:', secondsEl);
+        return;
+    }
+
+    if (distance < 0) {
+        // Wedding day has passed
+        daysEl.textContent = '00';
+        hoursEl.textContent = '00';
+        minutesEl.textContent = '00';
+        secondsEl.textContent = '00';
+        console.log('Wedding day has passed');
+        return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    console.log(`Countdown: ${days}d ${hours}h ${minutes}m ${seconds}s`);
+
+    daysEl.textContent = String(days).padStart(2, '0');
+    hoursEl.textContent = String(hours).padStart(2, '0');
+    minutesEl.textContent = String(minutes).padStart(2, '0');
+    secondsEl.textContent = String(seconds).padStart(2, '0');
+}
+
+// Update countdown every second
+setTimeout(() => {
+    console.log('Starting countdown timer...');
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+}, 100); // Small delay to ensure DOM is ready
