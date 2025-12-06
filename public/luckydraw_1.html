@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="language" content="English">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+  <meta name="msapplication-tap-highlight" content="no">
+
+  <!-- SEO -->
+  <meta name="description" content="Lucky Draw for Nan & Shell Wedding - Win exciting prizes!">
+  <meta name="keywords" content="wedding, lucky draw, Nan Shell, raffle, prize">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Lucky Draw - Nan & Shell Wedding">
+  <meta property="og:description" content="Lucky Draw for Nan & Shell Wedding - Win exciting prizes!">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="favicon.png" type="image/png">
+
+  <title>Lucky Draw - Nan & Shell Wedding</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="luckydraw_1.css">
+</head>
+
+<body>
+  <div id="app">
+    <div class="main">
+      <div class="control-group">
+        <button id="fullscreen-button" class="icon-button">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+          </svg>
+        </button>
+        <button id="settings-button" class="icon-button">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" />
+          </svg>
+        </button>
+      </div>
+
+      <canvas id="confetti-canvas" class="confetti"></canvas>
+
+      <header class="lucky-draw-header">
+        <img src="wedding-logo.png" alt="Nan & Shell Wedding Logo" class="wedding-logo">
+        <h1 class="page-title">Lucky Draw</h1>
+        <p class="page-subtitle">ร่วมลุ้นรับของรางวัล</p>
+      </header>
+
+      <div id="lucky-draw">
+
+        <div class="slot">
+          <div class="slot__outer">
+            <div class="slot__inner">
+              <div class="slot__shadow"></div>
+              <div id="reel" class="reel"></div>
+            </div>
+          </div>
+
+          <div id="sunburst" class="sunburst">
+            <img src="picker-sunburst.svg" alt="sunburst">
+          </div>
+        </div>
+
+        <button id="draw-button" class="solid-button">Draw</button>
+      </div>
+
+      <div id="settings" class="settings">
+        <div id="settings-panel" class="settings__panel">
+          <div class="settings__panel__group">
+            <h1 class="settings__title">Settings</h1>
+            <div class="input-group">
+              <label class="input-label" for="name-list">Name List</label>
+              <textarea class="input-field input-field--textarea" rows="8"
+                placeholder="Separate each name by line break" id="name-list"></textarea>
+            </div>
+
+            <div class="input-group input-group--2-column">
+              <label class="input-label" for="remove-from-list">Remove winner from list</label>
+              <label class="input--switch">
+                <input type="checkbox" checked="true" id="remove-from-list">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="input-group input-group--2-column">
+              <label class="input-label" for="enable-sound">Enable sound effect</label>
+              <label class="input--switch">
+                <input type="checkbox" checked="true" id="enable-sound">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="settings__panel__group">
+            <button id="settings-save" class="solid-button">Save</button>
+            <button id="settings-close" class="solid-button solid-button--danger">Discard and close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Winner Popup Modal -->
+      <div id="winner-popup" class="winner-popup">
+        <div class="winner-popup__overlay"></div>
+        <div class="winner-popup__content">
+          <button id="winner-popup-close" class="winner-popup__close">×</button>
+          <h2 class="winner-popup__title">🎉 ผู้โชคดี 🎉</h2>
+          <img id="winner-image" class="winner-popup__image" src="" alt="Winner"
+            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%22 y=%2260%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22%23666%22%3E👤%3C/text%3E%3C/svg%3E'">
+          <h3 id="winner-name" class="winner-popup__name"></h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p class="credit">Designed and developed by shelldon</p>
+      <p class="credit" style="margin-top: 0.5rem;">Used for #SDNAWEDDING | <a href="index.html">Back to Home</a></p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="luckydraw_1.js"></script>
+</body>
+
+</html>
