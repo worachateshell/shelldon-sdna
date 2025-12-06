@@ -360,7 +360,7 @@ function hideWinnerPopup() {
     }
 
     const soundEffects = new SoundEffects();
-    const MAX_REEL_ITEMS = 40;
+    const MAX_REEL_ITEMS = 100; // Increased for 10 second spin
     const CONFETTI_COLORS = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];
     let confettiAnimationId;
 
@@ -411,7 +411,7 @@ function hideWinnerPopup() {
         stopWinningAnimation();
         drawButton.disabled = true;
         settingsButton.disabled = true;
-        soundEffects.spin((MAX_REEL_ITEMS - 1) / 10);
+        soundEffects.spin(10); // 10 second spin duration
     };
 
     // Functions to be triggered after spinning
