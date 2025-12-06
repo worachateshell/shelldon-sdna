@@ -80,7 +80,7 @@ The server will start at `http://localhost:3000`.
 ├── public/                 # Static assets
 │   ├── index.html          # Main landing page
 │   ├── register.html       # Registration page
-│   ├── payment.html        # Digital envelope page
+│   ├── e-envelope.html     # Digital envelope page
 │   ├── luckydraw.js        # Game logic
 │   └── style.css           # Global styles
 └── uploads/                # Temporary upload directory

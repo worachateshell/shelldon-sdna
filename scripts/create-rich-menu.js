@@ -89,7 +89,7 @@ richMenuObject.areas = [
     // 6. Wishes
     {
         bounds: { x: 1667, y: 843, width: 833, height: 843 },
-        action: { type: 'uri', uri: `${websiteUrl}/payment.html` }
+        action: { type: 'uri', uri: `${websiteUrl}/e-envelope.html` }
     }
 ];
 

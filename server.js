@@ -286,7 +286,7 @@ app.get('/api/qr', async (req, res) => {
     // Point to the LINE Login route or the register page which has the login button
     // Better to point to register page so they can see "Login with LINE"
     // Use machine IP if possible, but localhost for now
-    const url = `http://localhost:${PORT}/payment.html`;
+    const url = `http://localhost:${PORT}/e-envelope.html`;
 
     try {
         const qrImage = await QRCode.toDataURL(url);
