@@ -235,8 +235,8 @@ class Slot {
 
         console.info('Remaining: ', this.nameList);
 
-        // Create animation with FIXED 15 second duration
-        const SPIN_DURATION = 15000; // 15 seconds in milliseconds
+        // Create animation with FIXED 20 second duration
+        const SPIN_DURATION = 20000; // 20 seconds in milliseconds
         const reelAnimation = reelContainer.animate(
             [
                 { transform: 'none', filter: 'blur(0)' },
