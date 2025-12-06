@@ -130,21 +130,8 @@ class Slot {
         this.onNameListChanged = onNameListChanged;
         this.currentWinner = null;
 
-        // Create reel animation
-        this.reelAnimation = this.reelContainer?.animate(
-            [
-                { transform: 'none', filter: 'blur(0)' },
-                { filter: 'blur(1px)', offset: 0.5 },
-                { transform: `translateY(-${(this.maxReelItems - 1) * (7.5 * 16)}px)`, filter: 'blur(0)' }
-            ],
-            {
-                duration: this.maxReelItems * 150, // 150ms per item = 15 seconds total
-                easing: 'ease-in-out',
-                iterations: 1
-            }
-        );
-
-        this.reelAnimation?.cancel();
+        // Animation will be created dynamically in spin() method
+        this.reelAnimation = null;
     }
 
     set names(names) {
@@ -206,8 +193,8 @@ class Slot {
             this.onSpinStart();
         }
 
-        const { reelContainer, reelAnimation, shouldRemoveWinner } = this;
-        if (!reelContainer || !reelAnimation) {
+        const { reelContainer, shouldRemoveWinner } = this;
+        if (!reelContainer) {
             return false;
         }
 
@@ -247,6 +234,21 @@ class Slot {
         }
 
         console.info('Remaining: ', this.nameList);
+
+        // Create animation with FIXED 15 second duration
+        const SPIN_DURATION = 15000; // 15 seconds in milliseconds
+        const reelAnimation = reelContainer.animate(
+            [
+                { transform: 'none', filter: 'blur(0)' },
+                { filter: 'blur(1px)', offset: 0.5 },
+                { transform: `translateY(-${(this.maxReelItems - 1) * (7.5 * 16)}px)`, filter: 'blur(0)' }
+            ],
+            {
+                duration: SPIN_DURATION,
+                easing: 'ease-in-out',
+                iterations: 1
+            }
+        );
 
         // Play the spin animation
         const animationPromise = new Promise((resolve) => {
