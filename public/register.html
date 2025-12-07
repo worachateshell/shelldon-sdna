@@ -45,6 +45,8 @@
 </head>
 
 <body>
+    <canvas id="confetti-canvas"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;"></canvas>
     <div class="reg-container" style="padding-top: 1rem;">
         <div class="wedding-logo" style="margin-bottom: 1rem;">
             <img src="logo.png" alt="Nan & Shell Wedding" style="max-width: 200px; filter: invert(1);">
@@ -95,6 +97,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script>
         // Check URL params for status
         const urlParams = new URLSearchParams(window.location.search);
@@ -103,12 +106,46 @@
         if (status === 'success') {
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('success-section').style.display = 'block';
+
+            // Trigger confetti
+            triggerConfetti();
         } else if (status === 'already_registered') {
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('already-registered-section').style.display = 'block';
         } else if (status === 'error') {
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('error-section').style.display = 'block';
+        }
+
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const customConfetti = confetti.create(canvas, {
+                resize: true,
+                useWorker: true
+            });
+
+            const CONFETTI_COLORS = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];
+            const duration = 3000; // 3 seconds
+            const animationEnd = Date.now() + duration;
+
+            const confettiInterval = setInterval(() => {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    clearInterval(confettiInterval);
+                    return;
+                }
+
+                const particleCount = 2;
+                customConfetti({
+                    particleCount,
+                    gravity: 0.8,
+                    spread: 90,
+                    origin: { y: 0.6 },
+                    colors: [CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)]],
+                    scalar: 1
+                });
+            }, 30);
         }
     </script>
 </body>
