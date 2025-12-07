@@ -152,6 +152,41 @@ app.get('/api/guests', async (req, res) => {
     }
 });
 
+// 1.5 Get Guests from Users_2 sheet (for luckydraw_2)
+app.get('/api/guests2', async (req, res) => {
+    const client = await getSheetsClient();
+    if (!client || !process.env.GOOGLE_SHEET_ID) {
+        // Fallback to empty array if Sheets not configured
+        return res.json([]);
+    }
+
+    try {
+        const response = await client.spreadsheets.values.get({
+            spreadsheetId: process.env.GOOGLE_SHEET_ID,
+            range: 'Users_2!A:C', // Columns: Name, PictureURL, LineID
+        });
+
+        const rows = response.data.values;
+        if (!rows || rows.length === 0) {
+            return res.json([]);
+        }
+
+        // Transform rows to objects, skip header row (first row)
+        const guests = rows
+            .slice(1) // Skip header row
+            .map(row => ({
+                name: row[0],
+                pictureUrl: row[1] || null
+            }))
+            .filter(g => g.name && g.name.trim()); // Filter out empty names
+
+        res.json(guests);
+    } catch (err) {
+        console.error("Sheets API Error (Users_2):", err.message);
+        res.json([]);
+    }
+});
+
 // Helper for local guests
 function getLocalGuests() {
     const DATA_FILE = path.join(__dirname, 'guests.json');
