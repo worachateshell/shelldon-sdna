@@ -202,11 +202,12 @@ function getLocalGuests() {
 
 // 2. LINE Login Auth
 app.get('/auth/line', (req, res) => {
+    const type = req.query.type || 'regular'; // 'regular' or 'lucky_draw_2'
     const params = new URLSearchParams({
         response_type: 'code',
         client_id: process.env.LINE_CHANNEL_ID,
         redirect_uri: process.env.LINE_CALLBACK_URL,
-        state: 'random_state_string', // Should be randomized
+        state: type, // Pass type through state parameter
         scope: 'profile openid',
         bot_prompt: 'aggressive', // Prompt to add LINE OA as friend
     });
@@ -214,8 +215,10 @@ app.get('/auth/line', (req, res) => {
 });
 
 app.get('/auth/line/callback', async (req, res) => {
-    const { code } = req.query;
+    const { code, state } = req.query;
     if (!code) return res.status(400).send('No code provided');
+
+    const registrationType = state || 'regular'; // 'regular' or 'lucky_draw_2'
 
     try {
         // Exchange code for token
@@ -236,19 +239,29 @@ app.get('/auth/line/callback', async (req, res) => {
 
         const { userId, displayName, pictureUrl } = profileRes.data;
 
-        // Save to Google Sheets (returns true if newly added, false if already exists)
-        const isNewUser = await saveGuestToSheet(displayName, pictureUrl, userId);
+        // Save to appropriate sheet based on registration type
+        let isNewUser;
+        let redirectPage;
+
+        if (registrationType === 'lucky_draw_2') {
+            isNewUser = await saveGuestToSheet2(displayName, pictureUrl, userId);
+            redirectPage = '/register2.html';
+        } else {
+            isNewUser = await saveGuestToSheet(displayName, pictureUrl, userId);
+            redirectPage = '/register.html';
+        }
 
         // Redirect with appropriate status
         if (isNewUser) {
-            res.redirect('/register.html?status=success');
+            res.redirect(`${redirectPage}?status=success`);
         } else {
-            res.redirect('/register.html?status=already_registered');
+            res.redirect(`${redirectPage}?status=already_registered`);
         }
 
     } catch (err) {
         console.error("LINE Login Error:", err.response ? err.response.data : err.message);
-        res.redirect('/register.html?status=error');
+        const redirectPage = registrationType === 'lucky_draw_2' ? '/register2.html' : '/register.html';
+        res.redirect(`${redirectPage}?status=error`);
     }
 });
 
@@ -315,58 +328,6 @@ async function saveGuestToSheet(name, pictureUrl, lineId) {
         return false; // Indicate failure
     }
 }
-
-// 2.5 LINE Login Auth for Lucky Draw 2 (saves to Users_2)
-app.get('/auth/line2', (req, res) => {
-    const params = new URLSearchParams({
-        response_type: 'code',
-        client_id: process.env.LINE_CHANNEL_ID,
-        redirect_uri: `${process.env.LINE_CALLBACK_URL.replace('/callback', '2/callback')}`,
-        state: 'lucky_draw_2',
-        scope: 'profile openid',
-        bot_prompt: 'aggressive',
-    });
-    res.redirect(`https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`);
-});
-
-app.get('/auth/line2/callback', async (req, res) => {
-    const { code } = req.query;
-    if (!code) return res.status(400).send('No code provided');
-
-    try {
-        // Exchange code for token
-        const tokenRes = await axios.post('https://api.line.me/oauth2/v2.1/token', new URLSearchParams({
-            grant_type: 'authorization_code',
-            code,
-            redirect_uri: `${process.env.LINE_CALLBACK_URL.replace('/callback', '2/callback')}`,
-            client_id: process.env.LINE_CHANNEL_ID,
-            client_secret: process.env.LINE_CHANNEL_SECRET,
-        }));
-
-        const { access_token } = tokenRes.data;
-
-        // Get Profile
-        const profileRes = await axios.get('https://api.line.me/v2/profile', {
-            headers: { Authorization: `Bearer ${access_token}` }
-        });
-
-        const { userId, displayName, pictureUrl } = profileRes.data;
-
-        // Save to Users_2 sheet
-        const isNewUser = await saveGuestToSheet2(displayName, pictureUrl, userId);
-
-        // Redirect with appropriate status
-        if (isNewUser) {
-            res.redirect('/register2.html?status=success');
-        } else {
-            res.redirect('/register2.html?status=already_registered');
-        }
-
-    } catch (err) {
-        console.error("LINE Login Error (Lucky Draw 2):", err.response ? err.response.data : err.message);
-        res.redirect('/register2.html?status=error');
-    }
-});
 
 async function saveGuestToSheet2(name, pictureUrl, lineId) {
     const client = await getSheetsClient();
