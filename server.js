@@ -316,6 +316,114 @@ async function saveGuestToSheet(name, pictureUrl, lineId) {
     }
 }
 
+// 2.5 LINE Login Auth for Lucky Draw 2 (saves to Users_2)
+app.get('/auth/line2', (req, res) => {
+    const params = new URLSearchParams({
+        response_type: 'code',
+        client_id: process.env.LINE_CHANNEL_ID,
+        redirect_uri: `${process.env.LINE_CALLBACK_URL.replace('/callback', '2/callback')}`,
+        state: 'lucky_draw_2',
+        scope: 'profile openid',
+        bot_prompt: 'aggressive',
+    });
+    res.redirect(`https://access.line.me/oauth2/v2.1/authorize?${params.toString()}`);
+});
+
+app.get('/auth/line2/callback', async (req, res) => {
+    const { code } = req.query;
+    if (!code) return res.status(400).send('No code provided');
+
+    try {
+        // Exchange code for token
+        const tokenRes = await axios.post('https://api.line.me/oauth2/v2.1/token', new URLSearchParams({
+            grant_type: 'authorization_code',
+            code,
+            redirect_uri: `${process.env.LINE_CALLBACK_URL.replace('/callback', '2/callback')}`,
+            client_id: process.env.LINE_CHANNEL_ID,
+            client_secret: process.env.LINE_CHANNEL_SECRET,
+        }));
+
+        const { access_token } = tokenRes.data;
+
+        // Get Profile
+        const profileRes = await axios.get('https://api.line.me/v2/profile', {
+            headers: { Authorization: `Bearer ${access_token}` }
+        });
+
+        const { userId, displayName, pictureUrl } = profileRes.data;
+
+        // Save to Users_2 sheet
+        const isNewUser = await saveGuestToSheet2(displayName, pictureUrl, userId);
+
+        // Redirect with appropriate status
+        if (isNewUser) {
+            res.redirect('/register2.html?status=success');
+        } else {
+            res.redirect('/register2.html?status=already_registered');
+        }
+
+    } catch (err) {
+        console.error("LINE Login Error (Lucky Draw 2):", err.response ? err.response.data : err.message);
+        res.redirect('/register2.html?status=error');
+    }
+});
+
+async function saveGuestToSheet2(name, pictureUrl, lineId) {
+    const client = await getSheetsClient();
+    if (!client || !process.env.GOOGLE_SHEET_ID) {
+        console.log("Sheets not configured for Lucky Draw 2");
+        return false;
+    }
+
+    try {
+        // Ensure 'Users_2' sheet exists
+        const meta = await client.spreadsheets.get({ spreadsheetId: process.env.GOOGLE_SHEET_ID });
+        const sheetExists = meta.data.sheets.some(s => s.properties.title === 'Users_2');
+
+        if (!sheetExists) {
+            await client.spreadsheets.batchUpdate({
+                spreadsheetId: process.env.GOOGLE_SHEET_ID,
+                resource: {
+                    requests: [{ addSheet: { properties: { title: 'Users_2' } } }]
+                }
+            });
+            // Add header row
+            await client.spreadsheets.values.append({
+                spreadsheetId: process.env.GOOGLE_SHEET_ID,
+                range: 'Users_2!A1',
+                valueInputOption: 'USER_ENTERED',
+                resource: { values: [['Name', 'PictureURL', 'LineID', 'Timestamp']] }
+            });
+        }
+
+        // Check if user already exists in Users_2
+        const response = await client.spreadsheets.values.get({
+            spreadsheetId: process.env.GOOGLE_SHEET_ID,
+            range: 'Users_2!C:C',
+        });
+
+        const existingIds = response.data.values ? response.data.values.flat() : [];
+        if (existingIds.includes(lineId)) {
+            console.log(`User ${name} (${lineId}) already in Users_2. Skipping.`);
+            return false;
+        }
+
+        // Add new user with timestamp
+        const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
+        await client.spreadsheets.values.append({
+            spreadsheetId: process.env.GOOGLE_SHEET_ID,
+            range: 'Users_2!A:D',
+            valueInputOption: 'USER_ENTERED',
+            resource: { values: [[name, pictureUrl, lineId, timestamp]] }
+        });
+        console.log(`Added ${name} to Users_2 sheet`);
+        return true; // New user added
+    } catch (err) {
+        console.error("Failed to append to Users_2 sheet:", err.message);
+        return false;
+    }
+}
+
 // 3. QR Code
 app.get('/api/qr', async (req, res) => {
     // Point to the LINE Login route or the register page which has the login button

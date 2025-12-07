@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Lucky Draw 2 - Nan & Shell Wedding</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Prompt:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .line-btn {
+            background-color: #06C755;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.3s;
+        }
+
+        .line-btn:hover {
+            background-color: #05a546;
+        }
+
+        .line-icon {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 5px;
+            padding: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="confetti-canvas"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;"></canvas>
+    <div class="reg-container" style="padding-top: 1rem;">
+        <div class="wedding-logo" style="margin-bottom: 1rem;">
+            <img src="logo.png" alt="Nan & Shell Wedding" style="max-width: 200px; filter: invert(1);">
+            <p style="color: #888; margin-top: 0.5rem;">Lucky Draw Round 2 Registration</p>
+        </div>
+
+        <div id="reg-form-container" class="display-box"
+            style="flex-direction: column; min-height: auto; padding: 2rem;">
+
+            <div id="login-section">
+                <p style="margin-bottom: 1.5rem; color: #ccc;">Please login with LINE to register for Lucky Draw 2</p>
+                <p style="margin-bottom: 1.5rem; color: #D4AF37; font-size: 1.1rem;">ลงทะเบียนเพื่อลุ้นของรางวัลรอบที่ 2
+                </p>
+                <a href="/auth/line2" style="text-decoration: none; width: 100%;">
+                    <button class="line-btn">
+                        <!-- Simple LINE Icon SVG -->
+                        <svg class="line-icon" viewBox="0 0 24 24" fill="#06C755">
+                            <path
+                                d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.019 9.614.388.084.915.259 1.049.595.12.3.079.74.038 1.029l-.155.929c-.047.28-.216 1.096.958.58 3.904-2.146 5.324-3.453 7.245-5.912 1.334-1.696 2.846-3.87 2.846-6.835z" />
+                        </svg>
+                        Login with LINE
+                    </button>
+                </a>
+            </div>
+
+            <div id="success-section" style="display: none;">
+                <h2 style="color: #06C755; margin-bottom: 1rem;">Welcome!</h2>
+                <p style="color: #fff;">ลงทะเบียนสำเร็จแล้ว<br>เตรียมตัวลุ้นของรางวัลรอบที่ 2 ได้เลย</p>
+                <p style="color: #888; font-size: 0.9rem; margin-top: 0.5rem;">You have successfully registered.<br>Get
+                    ready for Lucky Draw Round 2!</p>
+            </div>
+
+            <div id="already-registered-section" style="display: none;">
+                <h2 style="color: #4CAF50; margin-bottom: 1rem;">Already Registered!</h2>
+                <p style="color: #fff;">คุณทำการลงทะเบียนเรียบร้อยแล้ว<br>เตรียมตัวลุ้นของรางวัลภายในงานได้เลย</p>
+                <p style="color: #888; font-size: 0.9rem; margin-top: 0.5rem;">You have already registered.<br>Get ready
+                    to win prizes at the event!</p>
+            </div>
+
+            <div id="error-section" style="display: none;">
+                <h2 style="color: #f44336; margin-bottom: 1rem;">Error</h2>
+                <p style="color: #fff;">Registration failed. Please try again.</p>
+                <a href="/register.html" class="btn secondary-btn" style="margin-top: 1rem; display: inline-block;">Try
+                    Again</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script>
+        // Check URL params for status
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status');
+
+        if (status === 'success') {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('success-section').style.display = 'block';
+
+            // Trigger confetti
+            triggerConfetti();
+        } else if (status === 'already_registered') {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('already-registered-section').style.display = 'block';
+        } else if (status === 'error') {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('error-section').style.display = 'block';
+        }
+
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const customConfetti = confetti.create(canvas, {
+                resize: true,
+                useWorker: true
+            });
+
+            const CONFETTI_COLORS = ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff'];
+            const duration = 3000; // 3 seconds
+            const animationEnd = Date.now() + duration;
+
+            const confettiInterval = setInterval(() => {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    clearInterval(confettiInterval);
+                    return;
+                }
+
+                const particleCount = 2;
+                customConfetti({
+                    particleCount,
+                    gravity: 0.8,
+                    spread: 90,
+                    origin: { y: 0.6 },
+                    colors: [CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)]],
+                    scalar: 1
+                });
+            }, 30);
+        }
+    </script>
+</body>
+
+</html>
