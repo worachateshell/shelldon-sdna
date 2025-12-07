@@ -219,6 +219,9 @@ app.get('/auth/line/callback', async (req, res) => {
     if (!code) return res.status(400).send('No code provided');
 
     const registrationType = state || 'regular'; // 'regular' or 'lucky_draw_2'
+    console.log('=== LINE Callback Debug ===');
+    console.log('State parameter:', state);
+    console.log('Registration type:', registrationType);
 
     try {
         // Exchange code for token
@@ -238,18 +241,24 @@ app.get('/auth/line/callback', async (req, res) => {
         });
 
         const { userId, displayName, pictureUrl } = profileRes.data;
+        console.log('User info:', { userId, displayName });
 
         // Save to appropriate sheet based on registration type
         let isNewUser;
         let redirectPage;
 
         if (registrationType === 'lucky_draw_2') {
+            console.log('Saving to Users_2 sheet...');
             isNewUser = await saveGuestToSheet2(displayName, pictureUrl, userId);
             redirectPage = '/register2.html';
         } else {
+            console.log('Saving to Users sheet...');
             isNewUser = await saveGuestToSheet(displayName, pictureUrl, userId);
             redirectPage = '/register.html';
         }
+
+        console.log('Is new user:', isNewUser);
+        console.log('Redirecting to:', redirectPage);
 
         // Redirect with appropriate status
         if (isNewUser) {
