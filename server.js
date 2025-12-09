@@ -152,6 +152,31 @@ app.get('/api/guests', async (req, res) => {
     }
 });
 
+// New Endpoint: Get User Count
+app.get('/api/user-count', async (req, res) => {
+    try {
+        const client = await getSheetsClient();
+        if (!client || !process.env.GOOGLE_SHEET_ID) {
+            return res.json({ count: 0 });
+        }
+
+        // Just get the number of rows efficiently
+        // We can fetch column A to minimize data transfer, but we need the row count
+        const rows = await client.spreadsheets.values.get({
+            spreadsheetId: process.env.GOOGLE_SHEET_ID,
+            range: 'Users!A:A', // Just need one column to count
+        });
+
+        // Subtract 1 for header row
+        const count = rows.data.values ? Math.max(0, rows.data.values.length - 1) : 0;
+
+        res.json({ count });
+    } catch (err) {
+        console.error("Failed to fetch user count:", err.message);
+        res.status(500).json({ error: "Failed to fetch user count" });
+    }
+});
+
 // 1.5 Get Guests from Users_2 sheet (for luckydraw_2)
 app.get('/api/guests2', async (req, res) => {
     const client = await getSheetsClient();

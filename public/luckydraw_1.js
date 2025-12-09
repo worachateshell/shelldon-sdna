@@ -560,6 +560,11 @@ function hideWinnerPopup() {
             qrPopup.classList.add('show');
             qrPopup.style.display = 'flex'; // Force display flex
             qrPopup.style.opacity = '1';    // Force opacity 1
+
+            // Start polling
+            fetchUserCount(); // Fetch immediately
+            if (userCountInterval) clearInterval(userCountInterval);
+            userCountInterval = setInterval(fetchUserCount, 3000); // Poll every 3 seconds
         }
 
         function closeQRPopup() {
@@ -567,6 +572,12 @@ function hideWinnerPopup() {
             qrPopup.classList.remove('show');
             qrPopup.style.display = ''; // Reset to css rule
             qrPopup.style.opacity = ''; // Reset to css rule
+
+            // Stop polling to save resources
+            if (userCountInterval) {
+                clearInterval(userCountInterval);
+                userCountInterval = null;
+            }
         }
 
         // Open immediately
@@ -595,10 +606,32 @@ function hideWinnerPopup() {
         }
     }
 
+    // User Count Logic
+    const userCountElement = document.getElementById('user-count');
+    let userCountInterval;
+
+    async function fetchUserCount() {
+        if (!userCountElement) return;
+        try {
+            const response = await fetch('/api/user-count');
+            const data = await response.json();
+            if (data && typeof data.count === 'number') {
+                userCountElement.textContent = data.count;
+            }
+        } catch (error) {
+            console.error('Failed to fetch user count:', error);
+        }
+    }
+
     // Run when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initQRPopup);
     } else {
         initQRPopup();
     }
+
+    // Modify openQRPopup to start polling
+    // We need to override the previous definition or integrate it
+    // To minimize complexity, we'll redefine the init function's internals if possible,
+    // but since we are replacing the whole block, we can just rewrite the init function correctly.
 })();
