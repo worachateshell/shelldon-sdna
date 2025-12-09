@@ -542,3 +542,36 @@ function hideWinnerPopup() {
         });
     }
 })();
+// QR Code Popup Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const qrPopup = document.getElementById('qr-popup');
+    const qrButton = document.getElementById('qr-button');
+    const qrCloseButton = document.getElementById('qr-popup-close');
+    const qrOverlay = qrPopup.querySelector('.winner-popup__overlay');
+
+    function openQRPopup() {
+        qrPopup.classList.add('show');
+    }
+
+    function closeQRPopup() {
+        qrPopup.classList.remove('show');
+    }
+
+    // Open on load
+    // setTimeout(openQRPopup, 500); // Small delay for effect
+    // As requested: Open immediately on load
+    openQRPopup();
+
+    // Event Listeners
+    if (qrButton) {
+        qrButton.addEventListener('click', openQRPopup);
+    }
+
+    if (qrCloseButton) {
+        qrCloseButton.addEventListener('click', closeQRPopup);
+    }
+
+    if (qrOverlay) {
+        qrOverlay.addEventListener('click', closeQRPopup);
+    }
+});
