@@ -543,35 +543,62 @@ function hideWinnerPopup() {
     }
 })();
 // QR Code Popup Logic
-document.addEventListener('DOMContentLoaded', () => {
-    const qrPopup = document.getElementById('qr-popup');
-    const qrButton = document.getElementById('qr-button');
-    const qrCloseButton = document.getElementById('qr-popup-close');
-    const qrOverlay = qrPopup.querySelector('.winner-popup__overlay');
+(function () {
+    function initQRPopup() {
+        const qrPopup = document.getElementById('qr-popup');
+        const qrButton = document.getElementById('qr-button');
+        const qrCloseButton = document.getElementById('qr-popup-close');
 
-    function openQRPopup() {
-        qrPopup.classList.add('show');
+        console.log('QR Popup Init', { qrPopup, qrButton, qrCloseButton });
+
+        if (!qrPopup) return;
+
+        const qrOverlay = qrPopup.querySelector('.winner-popup__overlay');
+
+        function openQRPopup() {
+            console.log('Opening QR Popup');
+            qrPopup.classList.add('show');
+            qrPopup.style.display = 'flex'; // Force display flex
+            qrPopup.style.opacity = '1';    // Force opacity 1
+        }
+
+        function closeQRPopup() {
+            console.log('Closing QR Popup');
+            qrPopup.classList.remove('show');
+            qrPopup.style.display = ''; // Reset to css rule
+            qrPopup.style.opacity = ''; // Reset to css rule
+        }
+
+        // Open immediately
+        openQRPopup();
+
+        // Event Listeners
+        if (qrButton) {
+            qrButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                openQRPopup();
+            });
+        }
+
+        if (qrCloseButton) {
+            qrCloseButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeQRPopup();
+            });
+        }
+
+        if (qrOverlay) {
+            qrOverlay.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeQRPopup();
+            });
+        }
     }
 
-    function closeQRPopup() {
-        qrPopup.classList.remove('show');
+    // Run when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initQRPopup);
+    } else {
+        initQRPopup();
     }
-
-    // Open on load
-    // setTimeout(openQRPopup, 500); // Small delay for effect
-    // As requested: Open immediately on load
-    openQRPopup();
-
-    // Event Listeners
-    if (qrButton) {
-        qrButton.addEventListener('click', openQRPopup);
-    }
-
-    if (qrCloseButton) {
-        qrCloseButton.addEventListener('click', closeQRPopup);
-    }
-
-    if (qrOverlay) {
-        qrOverlay.addEventListener('click', closeQRPopup);
-    }
-});
+})();

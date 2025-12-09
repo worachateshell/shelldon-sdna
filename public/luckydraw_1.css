@@ -616,8 +616,8 @@ a:active {
 }
 
 .winner-popup.show {
-  display: flex;
-  opacity: 1;
+  display: flex !important;
+  opacity: 1 !important;
 }
 
 .winner-popup__overlay {
