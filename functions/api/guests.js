@@ -58,10 +58,11 @@ export async function onRequest(context) {
         }
 
         // Transform rows to objects (starting from row 2, no header)
-        // Format: { name: "Name", pictureUrl: "URL" }
+        // Format: { name: "Name", pictureUrl: "URL", lineId: "LineID" }
         const guests = rows.map(row => ({
             name: row[0],
-            pictureUrl: row[1] || null
+            pictureUrl: row[1] || null,
+            lineId: row[2] || null
         })).filter(g => g.name); // Filter out empty rows
 
         return new Response(JSON.stringify(guests), {

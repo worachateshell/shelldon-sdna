@@ -426,6 +426,14 @@ function hideWinnerPopup() {
             setTimeout(() => {
                 showWinnerPopup(slot.currentWinner);
             }, 500); // Small delay for effect
+
+            // Mark winner in Google Sheets
+            if (slot.currentWinner.lineId) {
+                console.log('Marking winner:', slot.currentWinner.name);
+                markWinnerAsReceived(slot.currentWinner.lineId)
+                    .then(() => console.log('Winner marked in Sheets'))
+                    .catch(e => console.error('Failed to mark winner:', e));
+            }
         }
 
         await soundEffects.win();
