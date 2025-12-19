@@ -61,8 +61,6 @@ async function getSheetsClient() {
     }
 }
 
-// Google Drive integration removed - using R2 only
-
 // Cloudflare R2 Client Setup
 let r2Client = null;
 function getR2Client() {
